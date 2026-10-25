@@ -10,10 +10,12 @@ const args = parseArgs({
   options: {
     version: { type: "string" },
     "dry-run": { type: "boolean", default: false },
+    "skip-npm": { type: "boolean", default: false },
   },
 });
 
 const dryRun = args.values["dry-run"];
+const skipNpm = args.values["skip-npm"];
 
 if (dryRun) {
   console.log('Running in "dry-run" mode');
@@ -133,9 +135,13 @@ async function main() {
   const readme = fs.readFileSync("README.md", "utf-8");
   fs.writeFileSync(path.join(distFolder, "README.md"), readme);
 
-  exec(`npm publish --tag ${distTag}${dryRun ? " --dry-run" : ""}`, {
-    cwd: distFolder,
-  });
+  if (skipNpm) {
+    console.log("Skipping: npm publish (--skip-npm)");
+  } else {
+    exec(`npm publish --tag ${distTag}${dryRun ? " --dry-run" : ""}`, {
+      cwd: distFolder,
+    });
+  }
 
   /*
    * Create npm package tarball

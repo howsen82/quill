@@ -12,6 +12,11 @@ on:
         type: boolean
         default: true
         required: true
+      skip-npm:
+        description: "Do not publish to npm. Still tags, builds the tarball and creates the GitHub release."
+        type: boolean
+        default: false
+        required: true
 
 permissions:
   contents: write
@@ -36,7 +41,7 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: ./scripts/release.js --version ${{ github.event.inputs.version }} ${{ github.event.inputs.dry-run == 'true' && '--dry-run' || '' }}
+      - run: ./scripts/release.js --version ${{ github.event.inputs.version }} ${{ github.event.inputs.dry-run == 'true' && '--dry-run' || '' }} ${{ github.event.inputs.skip-npm == 'true' && '--skip-npm' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,13 @@
+name: Main
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: master-build
+  cancel-in-progress: true
+
+jobs:
+  test:
+    uses: ./.github/workflows/_test.yml

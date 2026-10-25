@@ -1,0 +1,71 @@
+name: Tests
+on:
+  workflow_call:
+jobs:
+  e2e:
+    name: E2E Tests
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+        working-directory: packages/quill
+      - name: Run Playwright tests
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: pnpm run test:e2e --headed
+          working-directory: packages/quill
+  fuzz:
+    name: Fuzz Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+      - run: pnpm --filter quill run test:fuzz
+  unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit, firefox]
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter quill exec playwright install --with-deps
+      - run: pnpm run lint
+      - run: pnpm --filter quill run test:unit || pnpm --filter quill run test:unit || pnpm --filter quill run test:unit
+        env:
+          BROWSER: ${{ matrix.browser }}

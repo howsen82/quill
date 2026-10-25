@@ -1,0 +1,48 @@
+{
+  "name": "quill-monorepo",
+  "version": "2.0.5",
+  "description": "Quill development environment",
+  "private": true,
+  "author": "Jason Chen <jhchen7@gmail.com>",
+  "homepage": "https://quilljs.com",
+  "config": {
+    "ports": {
+      "webpack": "9080",
+      "website": "9000"
+    }
+  },
+  "packageManager": "pnpm@12.15.0",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/howsen82/quill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/howsen82/quill/issues"
+  },
+  "scripts": {
+    "build": "run-p build:*",
+    "build:quill": "pnpm --filter quill run build",
+    "build:website": "pnpm --filter website run build",
+    "start": "run-p start:*",
+    "start:quill": "pnpm --filter quill run start",
+    "start:website": "NEXT_PUBLIC_LOCAL_QUILL=true pnpm --filter website run start",
+    "lint": "pnpm -r run lint"
+  },
+  "keywords": [
+    "quill",
+    "editor",
+    "rich text",
+    "wysiwyg",
+    "operational transformation",
+    "ot",
+    "framework"
+  ],
+  "engines": {
+    "pnpm": ">=12.15.0"
+  },
+  "devDependencies": {
+    "execa": "^10.2.1",
+    "npm-run-all": "^4.1.5"
+  }
+}
